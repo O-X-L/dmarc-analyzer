@@ -1,0 +1,15 @@
+FROM opensearchproject/opensearch:2
+
+ARG OS_UID=1000
+
+USER root
+RUN groupmod --gid $OS_UID opensearch; \
+	usermod --uid $OS_UID opensearch; \
+	chown -R opensearch:opensearch /usr/share/opensearch
+
+RUN /usr/share/opensearch/bin/opensearch-plugin remove opensearch-skills
+RUN /usr/share/opensearch/bin/opensearch-plugin remove opensearch-ml
+RUN /usr/share/opensearch/bin/opensearch-plugin remove opensearch-security-analytics
+RUN /usr/share/opensearch/bin/opensearch-plugin remove opensearch-performance-analyzer
+
+USER opensearch

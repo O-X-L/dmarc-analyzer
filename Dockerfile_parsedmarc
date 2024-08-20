@@ -1,0 +1,16 @@
+FROM python:3.11-alpine
+
+ARG DM_UID=8800
+ARG DM_USER=dmarc
+
+RUN pip install parsedmarc && \
+    adduser --uid ${DM_UID} --home /home/dmarc --shell /usr/sbin/nologin --disabled-password ${DM_USER} ${DM_USER} && \
+    mkdir -p /dmarc && \
+    chown -R ${DM_USER}:${DM_USER} /dmarc
+
+COPY --chmod=0644 parsedmarc.ini /dmarc/
+
+WORKDIR /dmarc
+USER ${DM_USER}
+
+ENTRYPOINT ["parsedmarc", "-c", "/dmarc/parsedmarc.ini", "--debug"]

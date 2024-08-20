@@ -1,0 +1,78 @@
+---
+
+# source: https://github.com/O-X-L/dmarc-analyzer
+# see also: https://github.com/domainaware/parsedmarc
+
+# CHANGE:
+#   the OPENSEARCH_INITIAL_ADMIN_PASSWORD
+#   the '$PWD' to your actual paths
+#   the UID/GID of opensearch to the one that can write to the data directory
+
+networks:
+  dmarc:
+    driver: 'bridge'
+
+services:
+  opensearch:
+    build:
+      context: .
+      dockerfile: 'Dockerfile_opensearch'
+    hostname: 'opensearch'
+    user: '1000:1000'
+    environment:
+      UID: 1000
+      GID: 1000
+      OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx2048m'
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: '6uxhQDXRU!rNcEjJ!5ar0F'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - '$PWD/data:/usr/share/opensearch/data'
+      - '$PWD/log4j2.properties:/usr/share/opensearch/config/log4j2.properties'
+      - '$PWD/opensearch.yml:/usr/share/opensearch/config/opensearch.yml'
+    ports:
+      - '127.0.0.1:9200:9200'
+    healthcheck:
+        test: ['CMD', 'curl', '-f', 'http://localhost:9200']
+        interval: 5s
+        timeout: 2s
+        retries: 20
+    restart: 'unless-stopped'
+    networks:
+      - 'dmarc'
+
+  parsedmarc:
+    build:
+      context: .
+      dockerfile: 'Dockerfile_parsedmarc'
+    volumes:
+      - '$PWD/parsedmarc.ini:/dmarc/parsedmarc.ini:ro'
+      # - '$PWD/credentials.json:/dmarc/credentials.json:ro'
+      # - '$PWD/geoip.mmdb:/dmarc/geoip.mmdb:ro'
+    depends_on:
+      opensearch:
+        condition: 'service_healthy'
+    restart: 'unless-stopped'
+    networks:
+      - 'dmarc'
+
+  # todo: disable telemetry via '--disable-reporting' flag
+  grafana:
+    image: 'grafana/grafana:11.1.4'
+    ports:
+      - '3000:3000'
+    environment:
+      GF_INSTALL_PLUGINS: 'grafana-piechart-panel,grafana-worldmap-panel'
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_LOG_LEVEL: 'error'
+    restart: 'unless-stopped'
+    depends_on:
+      opensearch:
+        condition: 'service_healthy'
+    networks:
+      - 'dmarc'
