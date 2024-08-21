@@ -29,7 +29,7 @@ This dockerized stack is mainly utilizing the [parsedmarc](https://github.com/do
 * Create the data directory and change its owner:
 
   ```bash
-  mkdir -p ./data/
+  mkdir -p ./data/opensearch ./data/grafana
   chown ${OWNER}:${OWNER} ./data
   ```
 
@@ -38,7 +38,11 @@ This dockerized stack is mainly utilizing the [parsedmarc](https://github.com/do
 
 * Start: `docker compose -f docker-compose.yml up`
 * Check for error logs - you may have configuration issues
-* Access the web interface: [http://localhost:3000](http://localhost:3000)
+* Access the web interface: [http://localhost:3000](http://localhost:3000) - the default login is `admin/admin`
+
+### Rebuild
+
+`docker compose -f docker-compose.yml up --build --force-recreate --no-deps`
 
 ----
 

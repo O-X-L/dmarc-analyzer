@@ -6,7 +6,7 @@
 # CHANGE:
 #   the OPENSEARCH_INITIAL_ADMIN_PASSWORD
 #   the '$PWD' to your actual paths
-#   the UID/GID of opensearch to the one that can write to the data directory
+#   the UID/GID of opensearch & grafana to the one that can write to the data directory
 
 networks:
   dmarc:
@@ -32,7 +32,7 @@ services:
         soft: 65536
         hard: 65536
     volumes:
-      - '$PWD/data:/usr/share/opensearch/data'
+      - '$PWD/data/opensearch:/usr/share/opensearch/data'
       - '$PWD/log4j2.properties:/usr/share/opensearch/config/log4j2.properties'
       - '$PWD/opensearch.yml:/usr/share/opensearch/config/opensearch.yml'
     ports:
@@ -63,13 +63,20 @@ services:
 
   # todo: disable telemetry via '--disable-reporting' flag
   grafana:
-    image: 'grafana/grafana:11.1.4'
+    build:
+      context: .
+      dockerfile: 'Dockerfile_grafana'
     ports:
       - '3000:3000'
+    user: '1000:1000'
     environment:
-      GF_INSTALL_PLUGINS: 'grafana-piechart-panel,grafana-worldmap-panel'
-      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      UID: 1000
+      GID: 1000
+      GF_INSTALL_PLUGINS: 'grafana-opensearch-datasource'
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
       GF_LOG_LEVEL: 'error'
+    volumes:
+      - '$PWD/data/grafana:/var/lib/grafana'
     restart: 'unless-stopped'
     depends_on:
       opensearch:
