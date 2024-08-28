@@ -18,10 +18,10 @@ services:
       context: .
       dockerfile: 'Dockerfile_opensearch'
     hostname: 'opensearch'
-    user: '8800:8800'
+    user: '1000:1000'
     environment:
-      UID: 8800
-      GID: 8800
+      UID: 1000
+      GID: 1000
       OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx2048m'
       OPENSEARCH_INITIAL_ADMIN_PASSWORD: '6uxhQDXRU!rNcEjJ!5ar0F'
     ulimits:
@@ -69,10 +69,10 @@ services:
       dockerfile: 'Dockerfile_grafana'
     ports:
       - '3000:3000'
-    user: '8800:8800'
+    user: '1000:1000'
     environment:
-      UID: 8800
-      GID: 8800
+      UID: 1000
+      GID: 1000
       GF_INSTALL_PLUGINS: 'grafana-opensearch-datasource'
       GF_AUTH_ANONYMOUS_ENABLED: 'false'
       GF_LOG_LEVEL: 'error'

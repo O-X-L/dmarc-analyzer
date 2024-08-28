@@ -1,6 +1,6 @@
 FROM grafana/grafana:11.1.4
 
-ARG GF_UID=8800
+ARG GF_UID=1000
 
 USER root
 RUN echo http://dl-2.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories && \

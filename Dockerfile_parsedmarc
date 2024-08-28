@@ -1,6 +1,6 @@
 FROM python:3.11-alpine
 
-ARG DM_UID=8800
+ARG DM_UID=1000
 ARG DM_USER=dmarc
 
 RUN pip install parsedmarc && \
