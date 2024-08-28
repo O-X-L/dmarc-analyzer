@@ -1,3 +1,13 @@
 FROM grafana/grafana:11.1.4
 
-COPY grafana/ /etc/grafana/provisioning/
+ARG GF_UID=8800
+
+USER root
+RUN echo http://dl-2.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories && \
+    apk --no-cache add shadow && \
+    usermod --uid $GF_UID grafana; \
+    chown -R grafana /etc/grafana
+
+COPY --chown=grafana grafana/ /etc/grafana/provisioning/
+
+USER grafana

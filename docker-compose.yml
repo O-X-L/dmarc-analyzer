@@ -6,7 +6,7 @@
 # CHANGE:
 #   the OPENSEARCH_INITIAL_ADMIN_PASSWORD
 #   the '$PWD' to your actual paths
-#   the UID/GID of opensearch & grafana to the one that can write to the data directory
+#   the UID/GID of opensearch & grafana to the one that can write to the data directory (also in the dockerfiles)
 
 networks:
   dmarc:
@@ -18,10 +18,10 @@ services:
       context: .
       dockerfile: 'Dockerfile_opensearch'
     hostname: 'opensearch'
-    user: '1000:1000'
+    user: '8800:8800'
     environment:
-      UID: 1000
-      GID: 1000
+      UID: 8800
+      GID: 8800
       OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx2048m'
       OPENSEARCH_INITIAL_ADMIN_PASSWORD: '6uxhQDXRU!rNcEjJ!5ar0F'
     ulimits:
@@ -50,6 +50,7 @@ services:
     build:
       context: .
       dockerfile: 'Dockerfile_parsedmarc'
+      network: 'host'
     volumes:
       - '$PWD/parsedmarc.ini:/dmarc/parsedmarc.ini:ro'
       # - '$PWD/credentials.json:/dmarc/credentials.json:ro'
@@ -68,10 +69,10 @@ services:
       dockerfile: 'Dockerfile_grafana'
     ports:
       - '3000:3000'
-    user: '1000:1000'
+    user: '8800:8800'
     environment:
-      UID: 1000
-      GID: 1000
+      UID: 8800
+      GID: 8800
       GF_INSTALL_PLUGINS: 'grafana-opensearch-datasource'
       GF_AUTH_ANONYMOUS_ENABLED: 'false'
       GF_LOG_LEVEL: 'error'

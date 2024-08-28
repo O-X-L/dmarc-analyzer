@@ -1,6 +1,6 @@
 FROM opensearchproject/opensearch:2
 
-ARG OS_UID=1000
+ARG OS_UID=8800
 
 USER root
 RUN groupmod --gid $OS_UID opensearch; \
